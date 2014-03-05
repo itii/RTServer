@@ -34,12 +34,12 @@ namespace ReactiveT
         public MainWindow()
         {
             InitializeComponent();
-            _dataList = new List<Record>();
-            temp = new List<Record>();
+            _dataList = new List<Customer>();
+            temp = new List<Customer>();
         }
 
-        private List<Record> _dataList;
-        private List<Record> temp; 
+        private List<Customer> _dataList;
+        private List<Customer> temp; 
 
         private void Window_Loaded_1(object sender, RoutedEventArgs e)
         {
@@ -50,10 +50,10 @@ namespace ReactiveT
                 Connection = new HubConnection(Host);
                 Proxy = Connection.CreateHubProxy("RTServerHub");
 
-                Proxy.On<Record>("addMessage", (t) => MessageBox.Show(@"Someone updated Table:
-> " + t.RecordKey+@"
-> " + t.Value + @"
-> " + t.Description));
+                Proxy.On<Customer>("addMessage", (t) => MessageBox.Show(@"Someone updated Table:
+> " + t.OrderId+@"
+> " + t.CustomerId + @"
+> " + t.EmployeeId));
                 Connection.Start().ContinueWith((t) => { MessageBox.Show(Connection.State.ToString()); });
 
             });
@@ -66,7 +66,7 @@ namespace ReactiveT
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var response = client.GetAsync("/api/values").Result;
-            var records = response.Content.ReadAsAsync<Record[]>().Result;
+            var records = response.Content.ReadAsAsync<Customer[]>().Result;
 
             _dataList.AddRange(records);
 
@@ -78,11 +78,11 @@ namespace ReactiveT
 
         private void SaveButton_OnClick(object sender, RoutedEventArgs e)
         {
-            var changedRecord = new List<Record>();
+            var changedRecord = new List<Customer>();
             // post to webapi
             var client = new HttpClient { BaseAddress = new Uri("http://www.dota2picks.somee.com") }; // <- -- - - - - - - - --  - - - webapi
 
-            var gridData = DataGrid.ItemsSource.Cast<Record>().ToArray();
+            var gridData = DataGrid.ItemsSource.Cast<Customer>().ToArray();
 
             for (int i = 0; i < gridData.Count(); i++)
             {
@@ -95,11 +95,11 @@ namespace ReactiveT
 
             // signalr
             SendMessage(changedRecord);
-            //hello Yarik
+
            // Proxy.Invoke("ActivateRandomizeData");
         }
 
-        private void SendMessage(List<Record> changedRecord)
+        private void SendMessage(List<Customer> changedRecord)
         {
             foreach (var record in changedRecord)
             {
@@ -109,33 +109,53 @@ namespace ReactiveT
         }
     }
 
-    public class Record
+
+    public class Customer
     {
-        public int RecordKey { get; set; }
+        public int OrderId { get; set; }
 
-        public string Value { get; set; }
+        public string CustomerId { get; set; }
 
-        public string Description { get; set; }
+        public int EmployeeId { get; set; }
 
+        public DateTime OrderDate { get; set; }
+
+        public double Freight { get; set; }
+
+        public string ShipName { get; set; }
+
+        public string ShipAdress { get; set; }
+       
+        
         public override bool Equals(object obj)
         {
-            var record = obj as Record;
+            var record = obj as Customer;
 
-            if (this.RecordKey != record.RecordKey || this.Value != record.Value ||
-                this.Description != record.Description)
+            if (this.OrderId != record.OrderId || 
+                this.CustomerId != record.CustomerId ||
+                this.EmployeeId != record.EmployeeId ||
+                this.OrderDate != record.OrderDate ||
+                this.Freight != record.Freight ||
+                this.ShipName != record.ShipName ||
+                this.ShipAdress != record.ShipAdress)
                 return false;
             return true;
         }
 
-        public Record Clone()
+        public Customer Clone()
         {
-            var temp = new Record()
+            var temp = new Customer()
             {
-                RecordKey = RecordKey,
-                Value = Value,
-                Description = Description
+                OrderId = OrderId,
+                CustomerId = CustomerId,
+                EmployeeId = EmployeeId,
+                OrderDate = OrderDate,
+                Freight = Freight,
+                ShipAdress = ShipAdress,
+                ShipName = ShipName
             };
             return temp;
         }
     }
+
 }
