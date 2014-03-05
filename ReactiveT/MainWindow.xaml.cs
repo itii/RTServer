@@ -102,7 +102,7 @@ namespace ReactiveT
             // post to webapi
             var client = new HttpClient { BaseAddress = new Uri("http://www.dota2picks.somee.com") }; // <- -- - - - - - - - --  - - - webapi
 
-            var gridData = DataGrid.ItemsSource.Cast<Customer>().ToArray();
+            var gridData = DataGrid.ItemsSource.Cast<Customer>().ToList();
 
             for (int i = 0; i < gridData.Count(); i++)
             {
@@ -112,7 +112,7 @@ namespace ReactiveT
                     var item = gridData[i];
                     var itemToRemove = _dataList[i];
                     _dataList.Remove(itemToRemove);
-                    item.Index = i;
+                    item.Index = gridData.IndexOf(item);
                     _dataList.Insert(i,item);
                     changedRecord.Add(item);
                 }
@@ -135,6 +135,7 @@ namespace ReactiveT
 
     public class Customer :INotifyPropertyChanged
     {
+        private int _index;
         private int _orderId;
         private string _customerId;
         private int _employeeId;
@@ -143,7 +144,7 @@ namespace ReactiveT
         private string _shipName;
         private string _shipAdress;
 
-        public int Index { get; set; }
+        public int Index { get { return _index; } set { _index = value; } }
 
         public int OrderId
         {
@@ -200,6 +201,7 @@ namespace ReactiveT
         {
             var temp = new Customer()
             {
+                Index = Index,
                 OrderId = OrderId,
                 CustomerId = CustomerId,
                 EmployeeId = EmployeeId,
