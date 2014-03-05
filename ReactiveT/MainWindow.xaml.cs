@@ -95,7 +95,7 @@ namespace ReactiveT
 
             // signalr
             SendMessage(changedRecord);
-
+            //hello Yarik
            // Proxy.Invoke("ActivateRandomizeData");
         }
 

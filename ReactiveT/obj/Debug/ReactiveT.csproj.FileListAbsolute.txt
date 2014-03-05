@@ -17,3 +17,6 @@ C:\Users\Taras\Documents\Visual Studio 2012\Projects\ReactiveT\ReactiveT\bin\Deb
 C:\Users\Taras\Documents\Visual Studio 2012\Projects\ReactiveT\ReactiveT\bin\Debug\System.Net.Http.Formatting.xml
 C:\Users\Taras\Documents\Visual Studio 2012\Projects\ReactiveT\ReactiveT\bin\Debug\Microsoft.AspNet.SignalR.Client.dll
 C:\Users\Taras\Documents\Visual Studio 2012\Projects\ReactiveT\ReactiveT\bin\Debug\Microsoft.AspNet.SignalR.Client.xml
+C:\GitSource\ReactiveT\ReactiveT\bin\Debug\ReactiveT.exe.config
+C:\GitSource\ReactiveT\ReactiveT\obj\Debug\ReactiveT.exe
+C:\GitSource\ReactiveT\ReactiveT\obj\Debug\ReactiveT.pdb
