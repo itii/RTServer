@@ -27,7 +27,7 @@ namespace ReactiveT
     /// </summary>
     public partial class MainWindow : Window
     {
-
+        private string name = Guid.NewGuid().ToString();
         public const string Host = "http://www.dota2picks.somee.com";
 
         public IHubProxy Proxy { get; set; }
@@ -55,13 +55,17 @@ namespace ReactiveT
             {
                 Connection = new HubConnection(Host);
                 Proxy = Connection.CreateHubProxy("RTServerHub");
-
                 Proxy.On<Customer>("addMessage", (t) => MessageBox.Show(@"Someone updated Table:
 > " + t.OrderId+@"
 > " + t.CustomerId + @"
 > " + t.EmployeeId));
-                Connection.Start().ContinueWith((t) => { MessageBox.Show(Connection.State.ToString()); });
-
+                Connection.Start().ContinueWith((t) =>
+                {
+                    MessageBox.Show(Connection.State.ToString() +@"
+" + Connection.ConnectionId);
+                    Proxy.Invoke("Registration");
+                });
+               
             });
 
         }
@@ -101,8 +105,6 @@ namespace ReactiveT
 
             // signalr
             SendMessage(changedRecord);
-
-           // Proxy.Invoke("ActivateRandomizeData");
         }
 
         private void SendMessage(List<Customer> changedRecord)
