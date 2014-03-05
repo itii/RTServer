@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Net.Http;
@@ -15,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
 
@@ -30,13 +32,17 @@ namespace ReactiveT
 
         public IHubProxy Proxy { get; set; }
         public HubConnection Connection { get; set; }
-
+        
         public MainWindow()
         {
             InitializeComponent();
+
+          
             _dataList = new List<Customer>();
             temp = new List<Customer>();
         }
+
+        
 
         private List<Customer> _dataList;
         private List<Customer> temp; 
@@ -110,22 +116,51 @@ namespace ReactiveT
     }
 
 
-    public class Customer
+    public class Customer :INotifyPropertyChanged
     {
-        public int OrderId { get; set; }
+        private int _orderId;
+        private string _customerId;
+        private int _employeeId;
+        private DateTime _orderDate;
+        private double _freight;
+        private string _shipName;
+        private string _shipAdress;
 
-        public string CustomerId { get; set; }
+        public int OrderId
+        {
+            get { return _orderId; }
+            set { _orderId = value; NotifyPropertyChanged("OrderId"); }
+        }
 
-        public int EmployeeId { get; set; }
+        public string CustomerId
+        {
+            get { return _customerId; }
+            set { _customerId = value; NotifyPropertyChanged("CustomerId"); }
+        }
 
-        public DateTime OrderDate { get; set; }
+        public int EmployeeId
+        {
+            get { return _employeeId; }
+            set { _employeeId = value; NotifyPropertyChanged("EmployeeId"); }
+        }
+
+        public DateTime OrderDate
+        {
+            get { return _orderDate; }
+            set { _orderDate = value; NotifyPropertyChanged("OrderDate"); }
+        }
 
         public double Freight { get; set; }
 
         public string ShipName { get; set; }
 
         public string ShipAdress { get; set; }
-       
+
+        private void NotifyPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+        }
         
         public override bool Equals(object obj)
         {
@@ -156,6 +191,8 @@ namespace ReactiveT
             };
             return temp;
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 
 }
