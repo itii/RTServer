@@ -55,10 +55,20 @@ namespace ReactiveT
             {
                 Connection = new HubConnection(Host);
                 Proxy = Connection.CreateHubProxy("RTServerHub");
-                Proxy.On<Customer>("addMessage", (t) => MessageBox.Show(@"Someone updated Table:
-> " + t.OrderId+@"
-> " + t.CustomerId + @"
-> " + t.EmployeeId));
+                Proxy.On<Customer>("addMessage", (t) =>
+                {
+
+                    var data = DataGrid.ItemsSource.Cast<Customer>().ToArray();
+                    data[t.Index] = t;
+                    Application.Current.Dispatcher.BeginInvoke((Action)
+                        (() => {
+                                   DataGrid.ItemsSource = data;
+                        }));
+//                    MessageBox.Show(@"Someone updated Table:
+//> " + t.OrderId+@"
+//> " + t.CustomerId + @"
+//> " + t.EmployeeId)
+                });
                 Connection.Start().ContinueWith((t) =>
                 {
                     MessageBox.Show(Connection.State.ToString() +@"
@@ -99,7 +109,12 @@ namespace ReactiveT
                 if (!gridData[i].Equals(_dataList[i]))
                 {
                     var response = client.PostAsJsonAsync("api/User", gridData[i]).Result; //<-------- change string con
-                    changedRecord.Add(gridData[i]);
+                    var item = gridData[i];
+                    var itemToRemove = _dataList[i];
+                    _dataList.Remove(itemToRemove);
+                    item.Index = i;
+                    _dataList.Insert(i,item);
+                    changedRecord.Add(item);
                 }
             }
 
@@ -127,6 +142,8 @@ namespace ReactiveT
         private double _freight;
         private string _shipName;
         private string _shipAdress;
+
+        public int Index { get; set; }
 
         public int OrderId
         {
