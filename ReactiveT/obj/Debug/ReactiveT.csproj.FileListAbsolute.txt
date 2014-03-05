@@ -28,7 +28,6 @@ C:\GitSource\ReactiveT\ReactiveT\bin\Debug\System.Net.Http.Formatting.dll
 C:\GitSource\ReactiveT\ReactiveT\bin\Debug\Microsoft.AspNet.SignalR.Client.xml
 C:\GitSource\ReactiveT\ReactiveT\bin\Debug\Newtonsoft.Json.xml
 C:\GitSource\ReactiveT\ReactiveT\bin\Debug\System.Net.Http.Formatting.xml
-C:\GitSource\ReactiveT\ReactiveT\obj\Debug\ReactiveT.csprojResolveAssemblyReference.cache
 C:\GitSource\ReactiveT\ReactiveT\obj\Debug\MainWindow.baml
 C:\GitSource\ReactiveT\ReactiveT\obj\Debug\MainWindow.g.cs
 C:\GitSource\ReactiveT\ReactiveT\obj\Debug\App.g.cs
@@ -36,3 +35,4 @@ C:\GitSource\ReactiveT\ReactiveT\obj\Debug\ReactiveT_MarkupCompile.cache
 C:\GitSource\ReactiveT\ReactiveT\obj\Debug\ReactiveT.g.resources
 C:\GitSource\ReactiveT\ReactiveT\obj\Debug\ReactiveT.Properties.Resources.resources
 C:\GitSource\ReactiveT\ReactiveT\obj\Debug\ReactiveT.csproj.GenerateResource.Cache
+C:\GitSource\ReactiveT\ReactiveT\obj\Debug\ReactiveT.csprojResolveAssemblyReference.cache
