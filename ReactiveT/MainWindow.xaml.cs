@@ -108,7 +108,7 @@ namespace ReactiveT
             {
                 if (!gridData[i].Equals(_dataList[i]))
                 {
-                    var response = client.PutAsJsonAsync("api/User", gridData[i]).Result; //<-------- change string con
+                    var response = client.PutAsJsonAsync("api/Values/" + gridData[i].OrderId, gridData[i]).Result; //<-------- change string con
                     var item = gridData[i];
                     var itemToRemove = _dataList[i];
                     _dataList.Remove(itemToRemove);
@@ -185,7 +185,7 @@ namespace ReactiveT
         public override bool Equals(object obj)
         {
             var record = obj as Customer;
-
+            if (record == null) return false;
             if (this.OrderId != record.OrderId || 
                 this.CustomerId != record.CustomerId ||
                 this.EmployeeId != record.EmployeeId ||
