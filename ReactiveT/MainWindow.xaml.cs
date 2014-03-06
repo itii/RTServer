@@ -108,7 +108,7 @@ namespace ReactiveT
             {
                 if (!gridData[i].Equals(_dataList[i]))
                 {
-                    var response = client.PostAsJsonAsync("api/User", gridData[i]).Result; //<-------- change string con
+                    var response = client.PutAsJsonAsync("api/User", gridData[i]).Result; //<-------- change string con
                     var item = gridData[i];
                     var itemToRemove = _dataList[i];
                     _dataList.Remove(itemToRemove);
