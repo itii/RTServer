@@ -45,7 +45,6 @@ C:\RTServer\ReactiveT\bin\Debug\System.Net.Http.Formatting.dll
 C:\RTServer\ReactiveT\bin\Debug\Microsoft.AspNet.SignalR.Client.xml
 C:\RTServer\ReactiveT\bin\Debug\Newtonsoft.Json.xml
 C:\RTServer\ReactiveT\bin\Debug\System.Net.Http.Formatting.xml
-C:\RTServer\ReactiveT\obj\Debug\ReactiveT.csprojResolveAssemblyReference.cache
 C:\RTServer\ReactiveT\obj\Debug\MainWindow.baml
 C:\RTServer\ReactiveT\obj\Debug\MainWindow.g.cs
 C:\RTServer\ReactiveT\obj\Debug\App.g.cs
@@ -59,3 +58,8 @@ C:\GitSource\ReactiveT\ReactiveT\bin\Debug\MongoDB.Bson.dll
 C:\GitSource\ReactiveT\ReactiveT\bin\Debug\MongoDB.Driver.dll
 C:\GitSource\ReactiveT\ReactiveT\bin\Debug\MongoDB.Bson.xml
 C:\GitSource\ReactiveT\ReactiveT\bin\Debug\MongoDB.Driver.xml
+C:\RTServer\ReactiveT\bin\Debug\MongoDB.Bson.dll
+C:\RTServer\ReactiveT\bin\Debug\MongoDB.Driver.dll
+C:\RTServer\ReactiveT\bin\Debug\MongoDB.Bson.xml
+C:\RTServer\ReactiveT\bin\Debug\MongoDB.Driver.xml
+C:\RTServer\ReactiveT\obj\Debug\ReactiveT.csprojResolveAssemblyReference.cache

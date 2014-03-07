@@ -82,8 +82,9 @@ namespace ReactiveT
                     var data = DataGrid.ItemsSource.Cast<SamplePortfolio>().ToArray();
                     data[t.Index] = t;
                     Application.Current.Dispatcher.BeginInvoke((Action)
-                        (() => {
-                                   DataGrid.ItemsSource = data;
+                        (() =>
+                        {
+                            DataGrid.ItemsSource = data;
                         }));
 //                    MessageBox.Show(@"Someone updated Table:
 //> " + t.OrderId+@"
@@ -186,7 +187,7 @@ namespace ReactiveT
                     var itemToRemove = _dataList[i];
                     _dataList.Remove(itemToRemove);
                     item.Index = gridData.IndexOf(item);
-                    _dataList.Insert(i,item);
+                    _dataList.Insert(i,item.Clone());
                     changedRecord.Add(item);
                 }
             }
@@ -205,26 +206,61 @@ namespace ReactiveT
         }
     }
 
-    public class SamplePortfolio
+    public class SamplePortfolio :INotifyPropertyChanged
     {
+        private string _stuffID;
+        private double _bidPrice;
+        private double _offerPrice;
+        private double _priceC;
+        private double _tVol;
+        private double _tValue;
+        private double _iRate;
         [BsonId]
         internal ObjectId _id { get; set; }
 
-        internal int Index { get; set; }
+        public int Index { get; set; }
 
-        public string StuffID { get; set; }
+        public string StuffID
+        {
+            get { return _stuffID; } 
+            set { _stuffID = value; NotifyPropertyChanged("StuffID"); }
+        }
 
-        public double BidPrice { get; set; }
+        public double BidPrice
+        {
+            get { return _bidPrice; }
+            set { _bidPrice = value; NotifyPropertyChanged("BidPrice"); }
+        }
 
-        public double OfferPrice { get; set; }
+        public double OfferPrice
+        {
+            get { return _offerPrice; }
+            set { _offerPrice = value; NotifyPropertyChanged("OfferPrice"); }
+        }
 
-        public double PriceC { get; set; }
+        public double PriceC
+        {
+            get { return _priceC; }
+            set { _priceC = value; NotifyPropertyChanged("PriceC"); }
+        }
 
-        public double TVol { get; set; }
+        public double TVol
+        {
+            get { return _tVol; } 
+            set { _tVol = value; NotifyPropertyChanged("TVol"); }
+        }
 
-        public double TValue { get; set; }
+        public double TValue
+        {
+            get { return _tValue; } 
+            set { _tValue = value; NotifyPropertyChanged("TValue"); }
+        }
 
-        public double IRate { get; set; }
+        public double IRate
+        {
+            get { return _iRate; } 
+            set { _iRate = value; NotifyPropertyChanged("IRate"); }
+        }
 
         public override bool Equals(object obj)
         {
@@ -256,6 +292,13 @@ namespace ReactiveT
             };
             return temp;
         }
+
+        private void NotifyPropertyChanged(string name)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 
     public class Customer :INotifyPropertyChanged
