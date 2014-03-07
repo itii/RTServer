@@ -19,9 +19,11 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using Microsoft.AspNet.SignalR.Client;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Driver;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace ReactiveT
 {
@@ -38,6 +40,7 @@ namespace ReactiveT
         public IHubProxy Proxy { get; set; }
         public HubConnection Connection { get; set; }
 
+        public MongoCollection<SamplePortfolio> MongoCollection { get; set; }
 
         private DispatcherTimer _timer;
 
@@ -113,8 +116,8 @@ namespace ReactiveT
             {
                 var server = MongoServer.Create(connectionString);
                 var db = server.GetDatabase("rt_mongo");
-                var collection = db.GetCollection<SamplePortfolio>("SamplePortfolio");
-                var list = collection.FindAll().AsEnumerable();
+                MongoCollection = db.GetCollection<SamplePortfolio>("SamplePortfolio");
+                var list = MongoCollection.FindAll().AsEnumerable();
                 _dataList.AddRange(list);
                 _dataList.ForEach(f => temp.Add(f.Clone()));
                 Dispatcher.Invoke(()=>DataGrid.ItemsSource = temp);
@@ -132,9 +135,39 @@ namespace ReactiveT
 
         private void StartAggregateData()
         {
-            
-        }
+          //  MongoCollection
 
+            var group = new BsonDocument 
+                { 
+                    { "$group", 
+                        new BsonDocument 
+                            { 
+                                { "_id", new BsonDocument 
+                                             { 
+                                                 { 
+                                                     "Stuffs","$StuffID"
+                                                 } 
+                                             } 
+                                }, 
+                                { 
+                                    "Count", new BsonDocument 
+                                                 { 
+                                                     { 
+                                                         "$sum", 1 
+                                                     } 
+                                                 } 
+                                } 
+                            } 
+                  } 
+                };
+            var result = MongoCollection.Aggregate(group).ResultDocuments.Select(s=>ToDynamic(s));
+        }
+        public static dynamic ToDynamic(BsonDocument doc)
+        {
+            var json = doc.ToJson();
+            dynamic obj = JToken.Parse(json);
+            return obj;
+        } 
 
         private void SaveButton_OnClick(object sender, RoutedEventArgs e)
         {
