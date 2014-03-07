@@ -18,6 +18,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Microsoft.AspNet.SignalR.Client;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 
 namespace ReactiveT
@@ -27,19 +30,34 @@ namespace ReactiveT
     /// </summary>
     public partial class MainWindow : Window
     {
+        const string connectionString = "mongodb://itii:falconsoft@ds037737.mongolab.com:37737/rt_mongo";
+
         private string name = Guid.NewGuid().ToString();
         public const string Host = "http://www.dota2picks.somee.com";
 
         public IHubProxy Proxy { get; set; }
         public HubConnection Connection { get; set; }
-        
+
+
+        private DispatcherTimer _timer;
+
         public MainWindow()
         {
             InitializeComponent();
-
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromMilliseconds(500);
+            _timer.Tick += _timer_Tick;
+            
           
             _dataList = new List<SamplePortfolio>();
             temp = new List<SamplePortfolio>();
+        }
+
+        void _timer_Tick(object sender, EventArgs e)
+        {
+            ProgressBar.Value++;
+            if (ProgressBar.Value >= 100)
+                ProgressBar.Value = 0;
         }
 
         
@@ -82,17 +100,39 @@ namespace ReactiveT
 
         private void GetData()
         {
-            var client = new HttpClient { BaseAddress = new Uri("http://www.dota2picks.somee.com") }; // <- -- - - - - - - - --  - - - webapi
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            //var client = new HttpClient { BaseAddress = new Uri("http://www.dota2picks.somee.com") }; // <- -- - - - - - - - --  - - - webapi
+            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = client.GetAsync("/api/values").Result;
-            var records = response.Content.ReadAsAsync<SamplePortfolio[]>().Result;
+            //var response = client.GetAsync("/api/values").Result;
+            //var records = response.Content.ReadAsAsync<SamplePortfolio[]>().Result;
 
-            _dataList.AddRange(records);
+            //_dataList.AddRange(records);
+            SaveButton.IsEnabled = false;
+            _timer.Start();
+            Task.Factory.StartNew(() =>
+            {
+                var server = MongoServer.Create(connectionString);
+                var db = server.GetDatabase("rt_mongo");
+                var collection = db.GetCollection<SamplePortfolio>("SamplePortfolio");
+                var list = collection.FindAll().AsEnumerable();
+                _dataList.AddRange(list);
+                _dataList.ForEach(f => temp.Add(f.Clone()));
+                Dispatcher.Invoke(()=>DataGrid.ItemsSource = temp);
+            }).ContinueWith(t =>
+            {
+                _timer.Stop();
+                Dispatcher.Invoke(() =>
+                {
+                    ProgressBar.Value = 0;
+                    SaveButton.IsEnabled = true;
+                });
+                StartAggregateData();
+            });
+        }
 
-         
-            _dataList.ForEach(f => temp.Add(f.Clone()));
-            DataGrid.ItemsSource = temp;
+        private void StartAggregateData()
+        {
+            
         }
 
 
@@ -134,7 +174,8 @@ namespace ReactiveT
 
     public class SamplePortfolio
     {
-        internal string _id { get; set; }
+        [BsonId]
+        internal ObjectId _id { get; set; }
 
         internal int Index { get; set; }
 
