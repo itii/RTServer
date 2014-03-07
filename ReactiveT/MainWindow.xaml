@@ -11,7 +11,7 @@
         
         <DataGrid Grid.Row="0" Name="DataGrid" IsEnabled="True" IsReadOnly="false" CanUserAddRows="False" Margin="0,0,0,5">
         </DataGrid>
-        <DataGrid Grid.Row="1" Name="DataGridAggregation" IsEnabled="True" IsReadOnly="false" CanUserAddRows="False" Margin="0,5,0,0">
+        <DataGrid Grid.Row="1" Name="DataGridAggregation" IsEnabled="True" IsReadOnly="True" CanUserAddRows="False" Margin="0,5,0,0">
         </DataGrid>
         <DockPanel Grid.Row="2">
             <ProgressBar  Margin="10" Name="ProgressBar" Width="300"></ProgressBar>

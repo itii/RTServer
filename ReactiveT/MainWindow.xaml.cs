@@ -140,16 +140,9 @@ namespace ReactiveT
 
             var group = new BsonDocument 
                 { 
-                    { "$group", 
-                        new BsonDocument 
+                    { "$group", new BsonDocument 
                             { 
-                                { "_id", new BsonDocument 
-                                             { 
-                                                 { 
-                                                     "Stuffs","$StuffID"
-                                                 } 
-                                             } 
-                                }, 
+                            {  "_id","$StuffID" }, 
                                 { 
                                     "Count", new BsonDocument 
                                                  { 
@@ -158,17 +151,21 @@ namespace ReactiveT
                                                      } 
                                                  } 
                                 } 
-                            } 
+                            }
                   } 
                 };
             var result = MongoCollection.Aggregate(group).ResultDocuments.Select(s=>ToDynamic(s));
+            
+            Application.Current.Dispatcher.BeginInvoke((Action)(() => DataGridAggregation.ItemsSource = result));
         }
+
         public static dynamic ToDynamic(BsonDocument doc)
         {
             var json = doc.ToJson();
             dynamic obj = JToken.Parse(json);
             return obj;
         } 
+
 
         private void SaveButton_OnClick(object sender, RoutedEventArgs e)
         {
