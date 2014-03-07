@@ -10,7 +10,10 @@
         
         <DataGrid Grid.Row="0" Name="DataGrid" IsEnabled="True" IsReadOnly="false" CanUserAddRows="False">
         </DataGrid>
-        <Button Margin="10" Grid.Row="1" Name="SaveButton"  Content="Save" Click="SaveButton_OnClick"/>
-        
+        <DockPanel Grid.Row="1">
+            <Button Margin="10"  Name="SaveButton"  Content="Save" Click="SaveButton_OnClick"/>
+            <ProgressBar Orientation="Horizontal" Margin="10" Name="ProgressBar"></ProgressBar>
+        </DockPanel>
+
     </Grid>
 </Window>

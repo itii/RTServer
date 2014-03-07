@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,6 +20,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
+using Timer = System.Timers.Timer;
 
 namespace ReactiveT
 {
@@ -29,6 +31,7 @@ namespace ReactiveT
     {
         private string name = Guid.NewGuid().ToString();
         public const string Host = "http://www.dota2picks.somee.com";
+        private DispatcherTimer _timer;
 
         public IHubProxy Proxy { get; set; }
         public HubConnection Connection { get; set; }
@@ -36,10 +39,24 @@ namespace ReactiveT
         public MainWindow()
         {
             InitializeComponent();
-
+            _timer = new DispatcherTimer();
+            _timer.Tick += OnTick;
+            _timer.Interval = TimeSpan.FromMilliseconds(500);
           
             _dataList = new List<SamplePortfolio>();
             temp = new List<SamplePortfolio>();
+        }
+
+        private void OnTick(object sender, EventArgs e)
+        {
+            ProgressBar.Value++;
+            if (ProgressBar.Value == 99)
+                ProgressBar.Value = 0;
+        }
+
+        private void OnTick(object state)
+        {
+           
         }
 
         
@@ -82,17 +99,25 @@ namespace ReactiveT
 
         private void GetData()
         {
-            var client = new HttpClient { BaseAddress = new Uri("http://www.dota2picks.somee.com") }; // <- -- - - - - - - - --  - - - webapi
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _timer.Start();
+            var task = Task.Factory.StartNew(() =>
+            {
+                var client = new HttpClient {BaseAddress = new Uri("http://www.dota2picks.somee.com")};
+                // <- -- - - - - - - - --  - - - webapi
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var response = client.GetAsync("/api/values").Result;
-            var records = response.Content.ReadAsAsync<SamplePortfolio[]>().Result;
+                var response = client.GetAsync("/api/values").Result;
+                var records = response.Content.ReadAsAsync<SamplePortfolio[]>().Result;
 
-            _dataList.AddRange(records);
+                _dataList.AddRange(records);
 
-         
-            _dataList.ForEach(f => temp.Add(f.Clone()));
-            DataGrid.ItemsSource = temp;
+
+                _dataList.ForEach(f => temp.Add(f.Clone()));
+                DataGrid.ItemsSource = temp;
+            }
+            );
+            task.ContinueWith((t) => _timer.Stop());
+
         }
 
 
@@ -108,7 +133,7 @@ namespace ReactiveT
             {
                 if (!gridData[i].Equals(_dataList[i]))
                 {
-                    var response = client.PutAsJsonAsync("api/Values/" + gridData[i]._id, gridData[i]).Result; //<-------- change string con
+                   // var response = client.PutAsJsonAsync("api/Values/" + gridData[i]._id, gridData[i]).Result; //<-------- change string con
                     var item = gridData[i];
                     var itemToRemove = _dataList[i];
                     _dataList.Remove(itemToRemove);
@@ -136,7 +161,7 @@ namespace ReactiveT
     {
         internal string _id { get; set; }
 
-        internal int Index { get; set; }
+        public int Index { get; set; }
 
         public string StuffID { get; set; }
 
@@ -171,6 +196,7 @@ namespace ReactiveT
         {
             var temp = new SamplePortfolio()
             {
+                _id = _id,
                 Index = Index,
                 StuffID = StuffID,
                 BidPrice = BidPrice,
