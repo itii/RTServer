@@ -38,14 +38,14 @@ namespace ReactiveT
             InitializeComponent();
 
           
-            _dataList = new List<Customer>();
-            temp = new List<Customer>();
+            _dataList = new List<SamplePortfolio>();
+            temp = new List<SamplePortfolio>();
         }
 
         
 
-        private List<Customer> _dataList;
-        private List<Customer> temp; 
+        private List<SamplePortfolio> _dataList;
+        private List<SamplePortfolio> temp; 
 
         private void Window_Loaded_1(object sender, RoutedEventArgs e)
         {
@@ -55,10 +55,10 @@ namespace ReactiveT
             {
                 Connection = new HubConnection(Host);
                 Proxy = Connection.CreateHubProxy("RTServerHub");
-                Proxy.On<Customer>("addMessage", (t) =>
+                Proxy.On<SamplePortfolio>("addMessage", (t) =>
                 {
 
-                    var data = DataGrid.ItemsSource.Cast<Customer>().ToArray();
+                    var data = DataGrid.ItemsSource.Cast<SamplePortfolio>().ToArray();
                     data[t.Index] = t;
                     Application.Current.Dispatcher.BeginInvoke((Action)
                         (() => {
@@ -86,7 +86,7 @@ namespace ReactiveT
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var response = client.GetAsync("/api/values").Result;
-            var records = response.Content.ReadAsAsync<Customer[]>().Result;
+            var records = response.Content.ReadAsAsync<SamplePortfolio[]>().Result;
 
             _dataList.AddRange(records);
 
@@ -98,17 +98,17 @@ namespace ReactiveT
 
         private void SaveButton_OnClick(object sender, RoutedEventArgs e)
         {
-            var changedRecord = new List<Customer>();
+            var changedRecord = new List<SamplePortfolio>();
             // post to webapi
             var client = new HttpClient { BaseAddress = new Uri("http://www.dota2picks.somee.com") }; // <- -- - - - - - - - --  - - - webapi
 
-            var gridData = DataGrid.ItemsSource.Cast<Customer>().ToList();
+            var gridData = DataGrid.ItemsSource.Cast<SamplePortfolio>().ToList();
 
             for (int i = 0; i < gridData.Count(); i++)
             {
                 if (!gridData[i].Equals(_dataList[i]))
                 {
-                    var response = client.PutAsJsonAsync("api/Values/" + gridData[i].OrderId, gridData[i]).Result; //<-------- change string con
+                    var response = client.PutAsJsonAsync("api/Values/" + gridData[i]._id, gridData[i]).Result; //<-------- change string con
                     var item = gridData[i];
                     var itemToRemove = _dataList[i];
                     _dataList.Remove(itemToRemove);
@@ -122,7 +122,7 @@ namespace ReactiveT
             SendMessage(changedRecord);
         }
 
-        private void SendMessage(List<Customer> changedRecord)
+        private void SendMessage(List<SamplePortfolio> changedRecord)
         {
             foreach (var record in changedRecord)
             {
@@ -132,6 +132,57 @@ namespace ReactiveT
         }
     }
 
+    public class SamplePortfolio
+    {
+        internal string _id { get; set; }
+
+        internal int Index { get; set; }
+
+        public string StuffID { get; set; }
+
+        public double BidPrice { get; set; }
+
+        public double OfferPrice { get; set; }
+
+        public double PriceC { get; set; }
+
+        public double TVol { get; set; }
+
+        public double TValue { get; set; }
+
+        public double IRate { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            var record = obj as SamplePortfolio;
+            if (record == null) return false;
+            if (this.StuffID != record.StuffID ||
+                this.BidPrice != record.BidPrice ||
+                this.OfferPrice != record.OfferPrice ||
+                this.PriceC != record.PriceC ||
+                this.TVol != record.TVol ||
+                this.TValue != record.TValue ||
+                this.IRate != record.IRate)
+                return false;
+            return true;
+        }
+
+        public SamplePortfolio Clone()
+        {
+            var temp = new SamplePortfolio()
+            {
+                Index = Index,
+                StuffID = StuffID,
+                BidPrice = BidPrice,
+                OfferPrice = OfferPrice,
+                PriceC = PriceC,
+                TVol = TVol,
+                TValue = TValue,
+                IRate = IRate
+            };
+            return temp;
+        }
+    }
 
     public class Customer :INotifyPropertyChanged
     {
